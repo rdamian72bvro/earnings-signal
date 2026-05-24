@@ -61,6 +61,18 @@ dotnet restore EarningsSignal.sln
 dotnet run --project EarningsSignal.Api/EarningsSignal.Api.csproj
 ```
 
+On startup, the API applies pending EF Core migrations and seeds mock MVP data into PostgreSQL.
+
+Manual migration commands:
+
+```bash
+cd backend
+# run once if dotnet-ef is not installed:
+# dotnet tool install --global dotnet-ef
+dotnet ef migrations list --project EarningsSignal.Infrastructure/EarningsSignal.Infrastructure.csproj --startup-project EarningsSignal.Api/EarningsSignal.Api.csproj
+dotnet ef database update --project EarningsSignal.Infrastructure/EarningsSignal.Infrastructure.csproj --startup-project EarningsSignal.Api/EarningsSignal.Api.csproj
+```
+
 NuGet sources are pinned in `NuGet.Config` at the repo root.
 
 The API uses this default connection string (configurable):
@@ -108,6 +120,24 @@ Frontend build:
 cd frontend/earnings-signal-ui
 npm run build
 ```
+
+## CI checks (GitHub Actions)
+
+Workflow file:
+
+- `.github/workflows/ci.yml`
+
+Runs on push/pull request to `master` and `development`:
+
+- Backend:
+  - `dotnet restore ./backend/EarningsSignal.sln --configfile ./NuGet.Config`
+  - `dotnet build ./backend/EarningsSignal.sln --configuration Release --no-restore`
+  - `dotnet test ./backend/EarningsSignal.sln --configuration Release --no-build`
+  - `dotnet list ./backend/EarningsSignal.sln package --vulnerable --include-transitive --format json`
+- Frontend:
+  - `npm ci`
+  - `npm run build`
+  - `npm audit --audit-level=low`
 
 ## Notes
 

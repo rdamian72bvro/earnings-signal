@@ -19,9 +19,9 @@ public static class ServiceCollectionExtensions
         services.AddDbContext<EarningsSignalDbContext>(options =>
             options.UseNpgsql(connectionString));
 
-        services.AddScoped<ICompanyService, MockCompanyService>();
-        services.AddScoped<IEarningsService, MockEarningsService>();
-        services.AddScoped<ISignalService, MockSignalService>();
+        services.AddScoped<ICompanyService, DbCompanyService>();
+        services.AddScoped<IEarningsService, DbEarningsService>();
+        services.AddScoped<ISignalService, DbSignalService>();
 
         return services;
     }
