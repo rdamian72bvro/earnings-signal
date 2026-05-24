@@ -1,0 +1,21 @@
+:root {
+  --page-bg: #f2f5f8;
+  --card-bg: #ffffff;
+  --text-main: #172231;
+  --text-muted: #4d5a6b;
+  --border: #d8e0e8;
+  --accent: #0a6da8;
+  --accent-soft: #dff1fc;
+  --danger-soft: #fde6e6;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: radial-gradient(circle at top right, #dbe9f7, #f2f5f8 38%);
+  color: var(--text-main);
+}

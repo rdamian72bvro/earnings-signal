@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: earnings-signal-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: earnings_signal
+      POSTGRES_USER: earnings_signal
+      POSTGRES_PASSWORD: earnings_signal_dev_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - earnings_signal_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  earnings_signal_postgres_data:

@@ -1,0 +1,116 @@
+# Earnings Signal Generator
+
+MVP v1 skeleton for an S&P 500 earnings-reaction signal generator.
+
+This repo currently implements only Phase 1 foundation:
+
+- .NET 8 backend solution (`/backend/EarningsSignal.sln`)
+- Angular frontend app (`/frontend/earnings-signal-ui`)
+- PostgreSQL via Docker Compose
+- Seed/mock data for companies, upcoming earnings, and live signals
+- Basic API endpoints:
+  - `GET /api/companies`
+  - `GET /api/earnings/upcoming`
+  - `GET /api/signals/live`
+
+Not included in MVP v1:
+
+- real trading
+- Alpaca integration
+- external data-provider integrations
+- LLM transcript analysis
+- options trading
+- authentication
+
+## Project structure
+
+```text
+backend/
+  EarningsSignal.sln
+  EarningsSignal.Api/
+  EarningsSignal.Application/
+  EarningsSignal.Domain/
+  EarningsSignal.Infrastructure/
+  EarningsSignal.Tests/
+
+frontend/
+  earnings-signal-ui/
+```
+
+## Start PostgreSQL (Docker Compose)
+
+From the repository root:
+
+```bash
+docker compose up -d postgres
+```
+
+Start all defined services:
+
+```bash
+docker compose up -d
+```
+
+## Run backend API
+
+From repository root:
+
+```bash
+cd backend
+dotnet restore EarningsSignal.sln
+dotnet run --project EarningsSignal.Api/EarningsSignal.Api.csproj
+```
+
+NuGet sources are pinned in `NuGet.Config` at the repo root.
+
+The API uses this default connection string (configurable):
+
+- `ConnectionStrings:Postgres` in `backend/EarningsSignal.Api/appsettings.json`
+- override via env var `EARNINGS_SIGNAL_CONNECTION_STRING`
+
+Default local URL is usually:
+
+- `http://localhost:5086`
+
+## Run frontend
+
+From repository root:
+
+```bash
+cd frontend/earnings-signal-ui
+npm install
+npm run start
+```
+
+Default Angular dev URL:
+
+- `http://localhost:4200`
+
+The dev server proxies API calls to the backend at `http://localhost:5086` using `frontend/earnings-signal-ui/proxy.conf.json`.
+
+The Weekly Scanner page calls:
+
+- `/api/earnings/upcoming`
+- `/api/signals/live`
+
+## Build commands
+
+Backend build:
+
+```bash
+cd backend
+dotnet build EarningsSignal.sln
+```
+
+Frontend build:
+
+```bash
+cd frontend/earnings-signal-ui
+npm run build
+```
+
+## Notes
+
+- All current market data in MVP is mock/seed data.
+- Domain entities are in `backend/EarningsSignal.Domain/Entities`.
+- EF Core `DbContext` is in `backend/EarningsSignal.Infrastructure/Data/EarningsSignalDbContext.cs`.

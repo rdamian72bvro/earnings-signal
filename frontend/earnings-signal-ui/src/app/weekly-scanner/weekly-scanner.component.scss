@@ -1,0 +1,109 @@
+.panel {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.panel h2 {
+  margin: 0 0 0.9rem;
+  font-size: 1.2rem;
+}
+
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 900px;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 0.65rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+th {
+  background: #f7fafc;
+  color: #34404f;
+  font-weight: 600;
+}
+
+.pill {
+  display: inline-block;
+  background: var(--accent-soft);
+  color: #0f3f63;
+  border-radius: 999px;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.85rem;
+}
+
+.signal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 0.75rem;
+}
+
+.signal-card {
+  border: 1px solid var(--border);
+  border-radius: 0.65rem;
+  padding: 0.85rem;
+}
+
+.signal-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.signal-top h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.signal-top p {
+  margin: 0.2rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.signal-type {
+  align-self: flex-start;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  padding: 0.18rem 0.5rem;
+  background: #f7fafc;
+  font-size: 0.8rem;
+}
+
+.meta {
+  margin: 0.55rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.reason {
+  margin: 0.7rem 0;
+  color: #213547;
+}
+
+.state-text {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.error-text {
+  margin: 0;
+  color: #a01818;
+  background: var(--danger-soft);
+  border: 1px solid #f1b3b3;
+  border-radius: 0.45rem;
+  padding: 0.55rem 0.7rem;
+}

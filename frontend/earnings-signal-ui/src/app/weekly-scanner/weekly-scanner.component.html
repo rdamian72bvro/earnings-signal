@@ -1,0 +1,58 @@
+<section class="panel">
+  <h2>Weekly Scanner</h2>
+
+  <p *ngIf="isLoadingEarnings" class="state-text">Loading upcoming earnings...</p>
+  <p *ngIf="earningsError" class="error-text">{{ earningsError }}</p>
+
+  <div *ngIf="!isLoadingEarnings && !earningsError" class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Ticker</th>
+          <th>Company Name</th>
+          <th>Report Date</th>
+          <th>Report Time</th>
+          <th>Sector</th>
+          <th>Expectation Pressure Score</th>
+          <th>Pre-Signal</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let row of upcomingEarnings">
+          <td>{{ row.ticker }}</td>
+          <td>{{ row.companyName }}</td>
+          <td>{{ formatReportDate(row.reportDate) }}</td>
+          <td>{{ row.reportTime }}</td>
+          <td>{{ row.sector }}</td>
+          <td>{{ row.expectationPressureScore }}</td>
+          <td>
+            <span class="pill">{{ row.preSignal }}</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>Live Signals</h2>
+
+  <p *ngIf="isLoadingSignals" class="state-text">Loading live signals...</p>
+  <p *ngIf="signalsError" class="error-text">{{ signalsError }}</p>
+
+  <div *ngIf="!isLoadingSignals && !signalsError" class="signal-grid">
+    <article *ngFor="let signal of liveSignals" class="signal-card">
+      <div class="signal-top">
+        <div>
+          <h3>{{ signal.ticker }}</h3>
+          <p>{{ signal.companyName }}</p>
+        </div>
+        <span class="signal-type">{{ signal.signalType }}</span>
+      </div>
+
+      <p class="meta">Sector: {{ signal.sector }} | Score: {{ signal.score }}</p>
+      <p class="reason">{{ signal.reasonSummary }}</p>
+      <p class="meta">Generated: {{ signal.generatedAtUtc | date: 'MMM d, y, h:mm a' }}</p>
+    </article>
+  </div>
+</section>
