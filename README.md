@@ -109,6 +109,24 @@ cd frontend/earnings-signal-ui
 npm run build
 ```
 
+## CI checks (GitHub Actions)
+
+Workflow file:
+
+- `.github/workflows/ci.yml`
+
+Runs on push/pull request to `master` and `development`:
+
+- Backend:
+  - `dotnet restore ./backend/EarningsSignal.sln --configfile ./NuGet.Config`
+  - `dotnet build ./backend/EarningsSignal.sln --configuration Release --no-restore`
+  - `dotnet test ./backend/EarningsSignal.sln --configuration Release --no-build`
+  - `dotnet list ./backend/EarningsSignal.sln package --vulnerable --include-transitive --format json`
+- Frontend:
+  - `npm ci`
+  - `npm run build`
+  - `npm audit --audit-level=low`
+
 ## Notes
 
 - All current market data in MVP is mock/seed data.
