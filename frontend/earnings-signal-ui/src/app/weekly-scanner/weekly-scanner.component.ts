@@ -1,5 +1,6 @@
 import { CommonModule, DatePipe } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LiveSignal } from '../models/live-signal.model';
 import { UpcomingEarnings } from '../models/upcoming-earnings.model';
 import { MarketDataService } from '../services/market-data.service';
@@ -12,6 +13,8 @@ import { MarketDataService } from '../services/market-data.service';
   styleUrl: './weekly-scanner.component.scss'
 })
 export class WeeklyScannerComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
+
   upcomingEarnings: UpcomingEarnings[] = [];
   liveSignals: LiveSignal[] = [];
   isLoadingEarnings = true;
@@ -27,29 +30,35 @@ export class WeeklyScannerComponent implements OnInit {
   }
 
   private loadUpcomingEarnings(): void {
-    this.marketDataService.getUpcomingEarnings().subscribe({
-      next: (data) => {
-        this.upcomingEarnings = data;
-        this.isLoadingEarnings = false;
-      },
-      error: () => {
-        this.earningsError = 'Could not load upcoming earnings from the API.';
-        this.isLoadingEarnings = false;
-      }
-    });
+    this.marketDataService
+      .getUpcomingEarnings()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data: UpcomingEarnings[]) => {
+          this.upcomingEarnings = data;
+          this.isLoadingEarnings = false;
+        },
+        error: () => {
+          this.earningsError = 'Could not load upcoming earnings from the API.';
+          this.isLoadingEarnings = false;
+        }
+      });
   }
 
   private loadLiveSignals(): void {
-    this.marketDataService.getLiveSignals().subscribe({
-      next: (data) => {
-        this.liveSignals = data;
-        this.isLoadingSignals = false;
-      },
-      error: () => {
-        this.signalsError = 'Could not load live signals from the API.';
-        this.isLoadingSignals = false;
-      }
-    });
+    this.marketDataService
+      .getLiveSignals()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data: LiveSignal[]) => {
+          this.liveSignals = data;
+          this.isLoadingSignals = false;
+        },
+        error: () => {
+          this.signalsError = 'Could not load live signals from the API.';
+          this.isLoadingSignals = false;
+        }
+      });
   }
 
   formatReportDate(reportDate: string): string {

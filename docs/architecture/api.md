@@ -2,228 +2,77 @@
 
 ## Goal
 
-Expose a simple API for the Angular frontend and future background jobs.
+Expose a minimal REST API for the MVP v1 Angular Weekly Scanner page using seeded data.
 
-MVP v1 should focus on read-heavy endpoints and mock/seed data.
-
-## Base path
+Base path:
 
 ```text
 /api
 ```
 
-## MVP endpoints
+## Implemented MVP endpoints
 
-### Get companies
+### GET /api/companies
 
-```http
-GET /api/companies
-```
+Returns seeded companies.
 
-Response example:
+Response shape:
 
 ```json
 [
   {
-    "ticker": "MSFT",
-    "name": "Microsoft Corporation",
+    "id": "11111111-1111-1111-1111-111111111111",
+    "ticker": "AAPL",
+    "name": "Apple Inc.",
     "sector": "Technology",
-    "marketCap": 3000000000000,
-    "isSp500": true
+    "industry": "Consumer Electronics"
   }
 ]
 ```
 
-### Get upcoming earnings
+### GET /api/earnings/upcoming
 
-```http
-GET /api/earnings/upcoming
-```
+Returns upcoming earnings rows for Weekly Scanner.
 
-Optional query parameters:
-
-```text
-from
-to
-sector
-signalType
-minExpectationPressure
-```
-
-Response example:
+Response shape:
 
 ```json
 [
   {
-    "ticker": "MSFT",
-    "companyName": "Microsoft Corporation",
-    "reportDate": "2026-07-28",
-    "reportTime": "AMC",
+    "ticker": "AAPL",
+    "companyName": "Apple Inc.",
+    "reportDate": "2026-05-26",
+    "reportTime": "After Close",
     "sector": "Technology",
-    "forwardPe": 34.2,
-    "return20d": 8.4,
-    "return60d": 17.1,
-    "distanceFrom52WeekHigh": -2.3,
-    "expectationPressureScore": 78,
+    "expectationPressureScore": 78.0,
     "preSignal": "Short Watch"
   }
 ]
 ```
 
-### Get live signals
+### GET /api/signals/live
 
-```http
-GET /api/signals/live
-```
+Returns current live mock signals.
 
-Response example:
+Response shape:
 
 ```json
 [
   {
-    "ticker": "XYZ",
+    "ticker": "NVDA",
+    "companyName": "NVIDIA Corporation",
+    "sector": "Technology",
     "signalType": "Strong Short",
-    "direction": "Short",
-    "score": 84,
-    "confidence": 0.82,
-    "setupType": "Low-quality beat rejected by market",
-    "generatedAt": "2026-05-24T18:45:00Z",
-    "modelVersion": "earnings-reaction-v0.1",
-    "reasons": [
-      "Expectation pressure is high",
-      "Guidance was not raised",
-      "Stock failed post-earnings VWAP"
-    ],
-    "risks": [
-      "Company remains fundamentally high quality",
-      "Market regime is risk-on"
-    ]
+    "score": 87.3,
+    "reasonSummary": "Priced-for-perfection setup with bearish confirmation.",
+    "generatedAtUtc": "2026-05-24T18:50:00Z"
   }
 ]
 ```
 
-### Backtest runs
+## API rules
 
-```http
-GET /api/backtests
-```
-
-Returns recent backtest run summaries.
-
-### Run backtest
-
-```http
-POST /api/backtests/run
-```
-
-Request example:
-
-```json
-{
-  "strategyType": "CleanMissShort",
-  "holdingDays": 3,
-  "fromDate": null,
-  "toDate": null,
-  "minReactionPct": -2
-}
-```
-
-Response contains run summary and generated trades.
-
-### Backtest details
-
-```http
-GET /api/backtests/{id}
-GET /api/backtests/{id}/trades
-```
-
-## Later endpoints
-
-### Earnings
-
-```http
-GET /api/earnings/recent
-GET /api/earnings/{id}
-GET /api/earnings/{id}/reaction
-GET /api/earnings/{id}/transcript-analysis
-```
-
-### Companies
-
-```http
-GET /api/companies/{ticker}
-GET /api/companies/{ticker}/earnings-history
-GET /api/companies/{ticker}/fundamentals
-GET /api/companies/{ticker}/price
-```
-
-### Signals
-
-```http
-GET /api/signals/history
-GET /api/signals/{id}
-GET /api/signals/{id}/outcome
-POST /api/signals/recalculate
-```
-
-### Backtests
-
-```http
-GET /api/backtests
-POST /api/backtests/run
-GET /api/backtests/{id}
-GET /api/backtests/{id}/trades
-```
-
-### Forward tests
-
-```http
-GET /api/forward-tests
-GET /api/forward-tests/summary
-GET /api/forward-tests/by-model-version
-```
-
-### Paper trading
-
-```http
-GET /api/paper-trading/account
-GET /api/paper-trading/positions
-GET /api/paper-trading/trades
-POST /api/paper-trading/enable
-POST /api/paper-trading/disable
-POST /api/paper-trading/close/{tradeId}
-```
-
-## API design rules
-
-1. Controllers should be thin.
-2. Use DTOs rather than returning EF entities directly.
-3. Use async methods.
-4. Keep calculations in services.
-5. Return clear error responses.
-6. Include model version and data timestamp on signal responses.
-7. Do not expose API keys or provider secrets.
-8. Use pagination for historical lists.
-
-## First controller targets
-
-Implement these first:
-
-```text
-CompaniesController
-EarningsController
-SignalsController
-```
-
-## First services
-
-Implement these first:
-
-```text
-CompanyService
-EarningsCalendarService
-SignalReadService
-SeedDataService
-```
-
-Do not implement external-provider services until the basic API and UI work with seed data.
+1. Controllers remain thin.
+2. API returns DTOs, not EF entities directly.
+3. Async methods for data access.
+4. MVP uses seed/mock data only.

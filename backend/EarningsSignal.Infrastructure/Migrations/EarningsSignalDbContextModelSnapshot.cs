@@ -49,111 +49,6 @@ partial class EarningsSignalDbContextModelSnapshot : ModelSnapshot
                 b.ToTable("companies");
             });
 
-        modelBuilder.Entity("EarningsSignal.Domain.Entities.BacktestRun", b =>
-            {
-                b.Property<Guid>("Id")
-                    .HasColumnType("uuid");
-
-                b.Property<decimal>("AverageReturnPct")
-                    .HasPrecision(9, 4)
-                    .HasColumnType("numeric(9,4)");
-
-                b.Property<DateTime>("CreatedAtUtc")
-                    .HasColumnType("timestamp with time zone");
-
-                b.Property<DateOnly?>("FromDate")
-                    .HasColumnType("date");
-
-                b.Property<int>("HoldingDays")
-                    .HasColumnType("integer");
-
-                b.Property<string>("StrategyType")
-                    .IsRequired()
-                    .HasMaxLength(80)
-                    .HasColumnType("character varying(80)");
-
-                b.Property<int>("TotalEventsEvaluated")
-                    .HasColumnType("integer");
-
-                b.Property<int>("TotalTrades")
-                    .HasColumnType("integer");
-
-                b.Property<DateOnly?>("ToDate")
-                    .HasColumnType("date");
-
-                b.Property<decimal>("WinRatePct")
-                    .HasPrecision(9, 4)
-                    .HasColumnType("numeric(9,4)");
-
-                b.Property<int>("WinningTrades")
-                    .HasColumnType("integer");
-
-                b.HasKey("Id");
-
-                b.ToTable("backtest_runs");
-            });
-
-        modelBuilder.Entity("EarningsSignal.Domain.Entities.BacktestTrade", b =>
-            {
-                b.Property<Guid>("Id")
-                    .HasColumnType("uuid");
-
-                b.Property<Guid>("BacktestRunId")
-                    .HasColumnType("uuid");
-
-                b.Property<Guid>("CompanyId")
-                    .HasColumnType("uuid");
-
-                b.Property<string>("Direction")
-                    .IsRequired()
-                    .HasMaxLength(10)
-                    .HasColumnType("character varying(10)");
-
-                b.Property<Guid>("EarningsEventId")
-                    .HasColumnType("uuid");
-
-                b.Property<DateOnly>("EntryDate")
-                    .HasColumnType("date");
-
-                b.Property<decimal>("EntryPrice")
-                    .HasPrecision(18, 4)
-                    .HasColumnType("numeric(18,4)");
-
-                b.Property<DateOnly>("ExitDate")
-                    .HasColumnType("date");
-
-                b.Property<decimal>("ExitPrice")
-                    .HasPrecision(18, 4)
-                    .HasColumnType("numeric(18,4)");
-
-                b.Property<string>("Notes")
-                    .IsRequired()
-                    .HasMaxLength(400)
-                    .HasColumnType("character varying(400)");
-
-                b.Property<decimal>("ReturnPct")
-                    .HasPrecision(9, 4)
-                    .HasColumnType("numeric(9,4)");
-
-                b.Property<string>("SetupType")
-                    .IsRequired()
-                    .HasMaxLength(80)
-                    .HasColumnType("character varying(80)");
-
-                b.Property<string>("Ticker")
-                    .IsRequired()
-                    .HasMaxLength(10)
-                    .HasColumnType("character varying(10)");
-
-                b.HasKey("Id");
-
-                b.HasIndex("BacktestRunId");
-
-                b.HasIndex("Ticker", "EntryDate");
-
-                b.ToTable("backtest_trades");
-            });
-
         modelBuilder.Entity("EarningsSignal.Domain.Entities.DailyPrice", b =>
             {
                 b.Property<Guid>("Id")
@@ -327,17 +222,6 @@ partial class EarningsSignalDbContextModelSnapshot : ModelSnapshot
                     .IsRequired();
 
                 b.Navigation("Company");
-            });
-
-        modelBuilder.Entity("EarningsSignal.Domain.Entities.BacktestTrade", b =>
-            {
-                b.HasOne("EarningsSignal.Domain.Entities.BacktestRun", "BacktestRun")
-                    .WithMany("Trades")
-                    .HasForeignKey("BacktestRunId")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
-
-                b.Navigation("BacktestRun");
             });
 
         modelBuilder.Entity("EarningsSignal.Domain.Entities.EarningsActual", b =>
