@@ -249,12 +249,7 @@ public class DbBacktestService(EarningsSignalDbContext dbContext) : IBacktestSer
 
     private static int ResolveHoldingDays(int requestedHoldingDays)
     {
-        if (requestedHoldingDays <= 0)
-        {
-            return 3;
-        }
-
-        if (requestedHoldingDays > 20)
+        if (requestedHoldingDays < 1 || requestedHoldingDays > 20)
         {
             throw new ArgumentException("HoldingDays must be between 1 and 20.");
         }

@@ -86,6 +86,51 @@ public class ApiEndpointsTests(ApiWebApplicationFactory factory) : IClassFixture
         Assert.Equal(runResult.Trades.Count, fetchedTrades!.Count);
     }
 
+    [Fact]
+    public async Task RunBacktest_WithUnsupportedStrategy_ReturnsBadRequest()
+    {
+        var request = new BacktestRunRequestResponse(
+            StrategyType: "NotARealStrategy",
+            HoldingDays: 3,
+            FromDate: null,
+            ToDate: null,
+            MinReactionPct: -2m);
+
+        var response = await _client.PostAsJsonAsync("/api/backtests/run", request);
+
+        Assert.Equal(System.Net.HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task RunBacktest_WithInvalidHoldingDays_ReturnsBadRequest()
+    {
+        var request = new BacktestRunRequestResponse(
+            StrategyType: "CleanMissShort",
+            HoldingDays: 0,
+            FromDate: null,
+            ToDate: null,
+            MinReactionPct: -2m);
+
+        var response = await _client.PostAsJsonAsync("/api/backtests/run", request);
+
+        Assert.Equal(System.Net.HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task RunBacktest_WithFromDateAfterToDate_ReturnsBadRequest()
+    {
+        var request = new BacktestRunRequestResponse(
+            StrategyType: "CleanMissShort",
+            HoldingDays: 3,
+            FromDate: new DateOnly(2026, 05, 20),
+            ToDate: new DateOnly(2026, 05, 01),
+            MinReactionPct: -2m);
+
+        var response = await _client.PostAsJsonAsync("/api/backtests/run", request);
+
+        Assert.Equal(System.Net.HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
     public sealed record CompanyResponse(
         Guid Id,
         string Ticker,

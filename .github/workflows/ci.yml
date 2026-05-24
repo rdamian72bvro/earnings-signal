@@ -33,6 +33,9 @@ jobs:
       - name: Test
         run: dotnet test ./backend/EarningsSignal.sln --configuration Release --no-build
 
+      - name: Verify backtest endpoint test
+        run: dotnet test ./backend/EarningsSignal.Tests/EarningsSignal.Tests.csproj --configuration Release --no-build --filter "FullyQualifiedName~RunBacktest_AndReadBacktestEndpoints_ReturnsData"
+
       - name: Audit NuGet vulnerabilities
         shell: bash
         run: |

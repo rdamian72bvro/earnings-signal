@@ -44,21 +44,38 @@
 </section>
 
 <section class="panel" *ngIf="selectedRun">
-  <h2>Latest Run Summary</h2>
+  <h2>Run Details</h2>
+
+  <h3 class="subheading">Request Params</h3>
   <div class="summary-grid">
-    <p><strong>Strategy:</strong> {{ selectedRun.strategyType }}</p>
-    <p><strong>Holding:</strong> {{ selectedRun.holdingDays }} days</p>
+    <p><strong>Strategy:</strong> {{ lastRunRequest?.strategyType ?? '-' }}</p>
+    <p><strong>Holding Days:</strong> {{ lastRunRequest?.holdingDays ?? '-' }}</p>
+    <p><strong>Min Reaction %:</strong> {{ lastRunRequest?.minReactionPct ?? '-' }}</p>
+    <p><strong>From Date:</strong> {{ formatDate(lastRunRequest?.fromDate ?? null) }}</p>
+    <p><strong>To Date:</strong> {{ formatDate(lastRunRequest?.toDate ?? null) }}</p>
+  </div>
+
+  <h3 class="subheading">Run Metrics</h3>
+  <div class="summary-grid">
+    <p><strong>Generated:</strong> {{ selectedRun.createdAtUtc | date: 'MMM d, y, h:mm a' }}</p>
     <p><strong>Events Evaluated:</strong> {{ selectedRun.totalEventsEvaluated }}</p>
     <p><strong>Total Trades:</strong> {{ selectedRun.totalTrades }}</p>
     <p><strong>Winning Trades:</strong> {{ selectedRun.winningTrades }}</p>
     <p><strong>Win Rate:</strong> {{ selectedRun.winRatePct | number: '1.2-2' }}%</p>
     <p><strong>Average Return:</strong> {{ selectedRun.averageReturnPct | number: '1.2-2' }}%</p>
-    <p><strong>Generated:</strong> {{ selectedRun.createdAtUtc | date: 'MMM d, y, h:mm a' }}</p>
   </div>
 </section>
 
 <section class="panel">
   <h2>Backtest History</h2>
+
+  <button
+    *ngIf="!isLoadingRuns && recentRuns.length > 0"
+    type="button"
+    class="export-button"
+    (click)="exportRunHistoryCsv()">
+    Export Run History CSV
+  </button>
 
   <p *ngIf="isLoadingRuns" class="state-text">Loading recent runs...</p>
 

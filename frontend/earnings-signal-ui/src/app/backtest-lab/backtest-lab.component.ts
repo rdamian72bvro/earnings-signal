@@ -29,6 +29,7 @@ export class BacktestLabComponent implements OnInit {
   recentRuns: BacktestRun[] = [];
   selectedRun: BacktestRun | null = null;
   selectedTrades: BacktestTrade[] = [];
+  lastRunRequest: BacktestRunRequest | null = null;
 
   constructor(private readonly marketDataService: MarketDataService) {}
 
@@ -48,6 +49,8 @@ export class BacktestLabComponent implements OnInit {
       minReactionPct: this.minReactionPct
     };
 
+    this.lastRunRequest = { ...request };
+
     this.marketDataService.runBacktest(request).subscribe({
       next: (result: BacktestRunResult) => {
         this.selectedRun = result.run;
@@ -55,8 +58,8 @@ export class BacktestLabComponent implements OnInit {
         this.isRunning = false;
         this.loadRecentRuns();
       },
-      error: () => {
-        this.errorMessage = 'Could not run backtest. Please try again.';
+      error: (error: { error?: { error?: string } }) => {
+        this.errorMessage = error?.error?.error ?? 'Could not run backtest. Please try again.';
         this.isRunning = false;
       }
     });
@@ -137,6 +140,51 @@ export class BacktestLabComponent implements OnInit {
     const link = document.createElement('a');
     link.href = downloadUrl;
     link.download = `backtest-${this.selectedRun.id}.csv`;
+    link.click();
+    URL.revokeObjectURL(downloadUrl);
+  }
+
+  exportRunHistoryCsv(): void {
+    if (this.recentRuns.length === 0) {
+      return;
+    }
+
+    const header = [
+      'id',
+      'createdAtUtc',
+      'strategyType',
+      'holdingDays',
+      'fromDate',
+      'toDate',
+      'totalEventsEvaluated',
+      'totalTrades',
+      'winningTrades',
+      'winRatePct',
+      'averageReturnPct'
+    ];
+
+    const rows = this.recentRuns.map((run) => [
+      run.id,
+      run.createdAtUtc,
+      run.strategyType,
+      run.holdingDays.toString(),
+      run.fromDate ?? '',
+      run.toDate ?? '',
+      run.totalEventsEvaluated.toString(),
+      run.totalTrades.toString(),
+      run.winningTrades.toString(),
+      run.winRatePct.toString(),
+      run.averageReturnPct.toString()
+    ]);
+
+    const csvLines = [header.join(','), ...rows.map((row) => row.map((value) => `"${value}"`).join(','))];
+    const csv = csvLines.join('\n');
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const downloadUrl = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.download = 'backtest-history.csv';
     link.click();
     URL.revokeObjectURL(downloadUrl);
   }
