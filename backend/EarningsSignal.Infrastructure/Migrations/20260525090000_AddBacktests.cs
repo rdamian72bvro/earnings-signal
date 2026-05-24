@@ -1,10 +1,14 @@
 using System;
+using EarningsSignal.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace EarningsSignal.Infrastructure.Migrations;
 
+[DbContext(typeof(EarningsSignalDbContext))]
+[Migration("20260525090000_AddBacktests")]
 public partial class AddBacktests : Migration
 {
     protected override void Up(MigrationBuilder migrationBuilder)
