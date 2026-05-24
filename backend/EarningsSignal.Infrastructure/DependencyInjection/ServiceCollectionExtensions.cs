@@ -22,6 +22,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICompanyService, DbCompanyService>();
         services.AddScoped<IEarningsService, DbEarningsService>();
         services.AddScoped<ISignalService, DbSignalService>();
+        services.AddScoped<IBacktestService, DbBacktestService>();
 
         return services;
     }

@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="6.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.10" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
     <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
@@ -25,6 +26,7 @@
   <ItemGroup>
     <ProjectReference Include="..\EarningsSignal.Application\EarningsSignal.Application.csproj" />
     <ProjectReference Include="..\EarningsSignal.Domain\EarningsSignal.Domain.csproj" />
+    <ProjectReference Include="..\EarningsSignal.Infrastructure\EarningsSignal.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

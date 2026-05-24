@@ -76,3 +76,21 @@ Response shape:
 2. API returns DTOs, not EF entities directly.
 3. Async methods for data access.
 4. MVP uses seed/mock data only.
+
+## Phase 2 endpoints (Backtest Lab v1)
+
+### POST /api/backtests/run
+
+Runs a basic historical backtest using seeded historical earnings and price data.
+
+### GET /api/backtests
+
+Returns saved backtest run summaries.
+
+### GET /api/backtests/{id}
+
+Returns one backtest run summary by id.
+
+### GET /api/backtests/{id}/trades
+
+Returns generated trades for a run.
