@@ -1,0 +1,149 @@
+<section class="panel">
+  <h2>Backtest Lab</h2>
+  <p class="state-text">
+    Phase 2 MVP runner using seeded historical earnings data.
+  </p>
+
+  <div class="controls-grid">
+    <label>
+      Strategy
+      <select [(ngModel)]="strategyType">
+        <option value="CleanMissShort">Clean Miss Short</option>
+        <option value="LowQualityBeatShort">Low-Quality Beat Short</option>
+        <option value="BeatRejectedShort">Beat Rejected Short</option>
+        <option value="BeatAndRaiseLong">Beat-and-Raise Long</option>
+      </select>
+    </label>
+
+    <label>
+      Holding Days
+      <input type="number" min="1" max="20" [(ngModel)]="holdingDays">
+    </label>
+
+    <label>
+      Min Reaction %
+      <input type="number" step="0.1" [(ngModel)]="minReactionPct">
+    </label>
+
+    <label>
+      From Date (optional)
+      <input type="date" [(ngModel)]="fromDate">
+    </label>
+
+    <label>
+      To Date (optional)
+      <input type="date" [(ngModel)]="toDate">
+    </label>
+  </div>
+
+  <button type="button" class="run-button" [disabled]="isRunning" (click)="runBacktest()">
+    {{ isRunning ? 'Running...' : 'Run Backtest' }}
+  </button>
+
+  <p *ngIf="errorMessage" class="error-text">{{ errorMessage }}</p>
+</section>
+
+<section class="panel" *ngIf="selectedRun">
+  <h2>Latest Run Summary</h2>
+  <div class="summary-grid">
+    <p><strong>Strategy:</strong> {{ selectedRun.strategyType }}</p>
+    <p><strong>Holding:</strong> {{ selectedRun.holdingDays }} days</p>
+    <p><strong>Events Evaluated:</strong> {{ selectedRun.totalEventsEvaluated }}</p>
+    <p><strong>Total Trades:</strong> {{ selectedRun.totalTrades }}</p>
+    <p><strong>Winning Trades:</strong> {{ selectedRun.winningTrades }}</p>
+    <p><strong>Win Rate:</strong> {{ selectedRun.winRatePct | number: '1.2-2' }}%</p>
+    <p><strong>Average Return:</strong> {{ selectedRun.averageReturnPct | number: '1.2-2' }}%</p>
+    <p><strong>Generated:</strong> {{ selectedRun.createdAtUtc | date: 'MMM d, y, h:mm a' }}</p>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>Backtest History</h2>
+
+  <p *ngIf="isLoadingRuns" class="state-text">Loading recent runs...</p>
+
+  <div *ngIf="!isLoadingRuns && recentRuns.length === 0" class="state-text">
+    No backtest runs yet.
+  </div>
+
+  <div *ngIf="!isLoadingRuns && recentRuns.length > 0" class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Created</th>
+          <th>Strategy</th>
+          <th>Holding</th>
+          <th>Events</th>
+          <th>Trades</th>
+          <th>Win Rate</th>
+          <th>Avg Return</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="let run of recentRuns"
+          [class.selected-row]="selectedRun?.id === run.id"
+          (click)="loadTrades(run)">
+          <td>{{ run.createdAtUtc | date: 'MMM d, y, h:mm a' }}</td>
+          <td>{{ run.strategyType }}</td>
+          <td>{{ run.holdingDays }}</td>
+          <td>{{ run.totalEventsEvaluated }}</td>
+          <td>{{ run.totalTrades }}</td>
+          <td>{{ run.winRatePct | number: '1.2-2' }}%</td>
+          <td>{{ run.averageReturnPct | number: '1.2-2' }}%</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>Trades</h2>
+
+  <button
+    *ngIf="selectedTrades.length > 0"
+    type="button"
+    class="export-button"
+    (click)="exportTradesCsv()">
+    Export CSV
+  </button>
+
+  <p *ngIf="isLoadingTrades" class="state-text">Loading trades...</p>
+
+  <div *ngIf="!isLoadingTrades && selectedTrades.length === 0" class="state-text">
+    Select a run to view trades.
+  </div>
+
+  <div *ngIf="!isLoadingTrades && selectedTrades.length > 0" class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Ticker</th>
+          <th>Direction</th>
+          <th>Setup</th>
+          <th>Entry Date</th>
+          <th>Entry Price</th>
+          <th>Exit Date</th>
+          <th>Exit Price</th>
+          <th>Return %</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let trade of selectedTrades">
+          <td>{{ trade.ticker }}</td>
+          <td>{{ trade.direction }}</td>
+          <td>{{ trade.setupType }}</td>
+          <td>{{ formatDate(trade.entryDate) }}</td>
+          <td>{{ trade.entryPrice | number: '1.2-2' }}</td>
+          <td>{{ formatDate(trade.exitDate) }}</td>
+          <td>{{ trade.exitPrice | number: '1.2-2' }}</td>
+          <td [class.positive]="trade.returnPct > 0" [class.negative]="trade.returnPct < 0">
+            {{ trade.returnPct | number: '1.2-2' }}%
+          </td>
+          <td>{{ trade.notes }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>

@@ -12,6 +12,10 @@ This repo currently implements only Phase 1 foundation:
   - `GET /api/companies`
   - `GET /api/earnings/upcoming`
   - `GET /api/signals/live`
+  - `GET /api/backtests`
+  - `POST /api/backtests/run`
+  - `GET /api/backtests/{id}`
+  - `GET /api/backtests/{id}/trades`
 
 Not included in MVP v1:
 
@@ -104,6 +108,16 @@ The Weekly Scanner page calls:
 
 - `/api/earnings/upcoming`
 - `/api/signals/live`
+
+Backtest Lab calls:
+
+- `/api/backtests`
+- `/api/backtests/run`
+- `/api/backtests/{id}/trades`
+
+The Backtest Lab page is available at:
+
+- `http://localhost:4200/backtests`
 
 ## Build commands
 

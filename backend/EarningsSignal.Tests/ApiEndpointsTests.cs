@@ -52,6 +52,40 @@ public class ApiEndpointsTests(ApiWebApplicationFactory factory) : IClassFixture
         Assert.True(materializedLiveSignals[1].GeneratedAtUtc >= materializedLiveSignals[2].GeneratedAtUtc);
     }
 
+    [Fact]
+    public async Task RunBacktest_AndReadBacktestEndpoints_ReturnsData()
+    {
+        var request = new BacktestRunRequestResponse(
+            StrategyType: "CleanMissShort",
+            HoldingDays: 3,
+            FromDate: null,
+            ToDate: null,
+            MinReactionPct: -2m);
+
+        var runResponse = await _client.PostAsJsonAsync("/api/backtests/run", request);
+        runResponse.EnsureSuccessStatusCode();
+
+        var runResult = await runResponse.Content.ReadFromJsonAsync<BacktestRunResultResponse>();
+
+        Assert.NotNull(runResult);
+        Assert.True(runResult!.Run.TotalEventsEvaluated >= 5);
+        Assert.True(runResult.Run.TotalTrades >= 1);
+        Assert.All(runResult.Trades, trade => Assert.Equal("Short", trade.Direction));
+
+        var runs = await _client.GetFromJsonAsync<List<BacktestRunSummaryResponse>>("/api/backtests");
+        Assert.NotNull(runs);
+        Assert.Contains(runs!, run => run.Id == runResult.Run.Id);
+
+        var fetchedRun = await _client.GetFromJsonAsync<BacktestRunSummaryResponse>($"/api/backtests/{runResult.Run.Id}");
+        Assert.NotNull(fetchedRun);
+        Assert.Equal(runResult.Run.Id, fetchedRun!.Id);
+
+        var fetchedTrades =
+            await _client.GetFromJsonAsync<List<BacktestTradeResponse>>($"/api/backtests/{runResult.Run.Id}/trades");
+        Assert.NotNull(fetchedTrades);
+        Assert.Equal(runResult.Trades.Count, fetchedTrades!.Count);
+    }
+
     public sealed record CompanyResponse(
         Guid Id,
         string Ticker,
@@ -76,6 +110,43 @@ public class ApiEndpointsTests(ApiWebApplicationFactory factory) : IClassFixture
         decimal Score,
         string ReasonSummary,
         DateTime GeneratedAtUtc);
+
+    public sealed record BacktestRunRequestResponse(
+        string StrategyType,
+        int HoldingDays,
+        DateOnly? FromDate,
+        DateOnly? ToDate,
+        decimal MinReactionPct);
+
+    public sealed record BacktestRunResultResponse(
+        BacktestRunSummaryResponse Run,
+        IReadOnlyList<BacktestTradeResponse> Trades);
+
+    public sealed record BacktestRunSummaryResponse(
+        Guid Id,
+        string StrategyType,
+        int HoldingDays,
+        DateOnly? FromDate,
+        DateOnly? ToDate,
+        int TotalEventsEvaluated,
+        int TotalTrades,
+        int WinningTrades,
+        decimal WinRatePct,
+        decimal AverageReturnPct,
+        DateTime CreatedAtUtc);
+
+    public sealed record BacktestTradeResponse(
+        Guid Id,
+        Guid BacktestRunId,
+        string Ticker,
+        string Direction,
+        string SetupType,
+        DateOnly EntryDate,
+        decimal EntryPrice,
+        DateOnly ExitDate,
+        decimal ExitPrice,
+        decimal ReturnPct,
+        string Notes);
 }
 
 public class ApiWebApplicationFactory : WebApplicationFactory<Program>

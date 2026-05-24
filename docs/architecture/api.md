@@ -102,6 +102,41 @@ Response example:
 ]
 ```
 
+### Backtest runs
+
+```http
+GET /api/backtests
+```
+
+Returns recent backtest run summaries.
+
+### Run backtest
+
+```http
+POST /api/backtests/run
+```
+
+Request example:
+
+```json
+{
+  "strategyType": "CleanMissShort",
+  "holdingDays": 3,
+  "fromDate": null,
+  "toDate": null,
+  "minReactionPct": -2
+}
+```
+
+Response contains run summary and generated trades.
+
+### Backtest details
+
+```http
+GET /api/backtests/{id}
+GET /api/backtests/{id}/trades
+```
+
 ## Later endpoints
 
 ### Earnings

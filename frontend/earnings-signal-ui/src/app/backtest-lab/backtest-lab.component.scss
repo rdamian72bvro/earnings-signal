@@ -1,0 +1,114 @@
+.controls-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+  margin: 0.85rem 0;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+input,
+select {
+  border: 1px solid var(--border);
+  border-radius: 0.45rem;
+  padding: 0.45rem 0.5rem;
+  font-size: 0.92rem;
+  background: #ffffff;
+}
+
+.run-button {
+  background: var(--accent);
+  color: #ffffff;
+  border: none;
+  border-radius: 0.45rem;
+  padding: 0.5rem 0.85rem;
+  cursor: pointer;
+}
+
+.export-button {
+  background: #ffffff;
+  color: #154f77;
+  border: 1px solid #9dc9e5;
+  border-radius: 0.45rem;
+  padding: 0.4rem 0.7rem;
+  margin-bottom: 0.6rem;
+  cursor: pointer;
+}
+
+.run-button:disabled {
+  opacity: 0.65;
+  cursor: default;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.55rem 1rem;
+}
+
+.summary-grid p {
+  margin: 0;
+}
+
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 860px;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 0.6rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+th {
+  background: #f7fafc;
+  color: #34404f;
+  font-weight: 600;
+}
+
+.selected-row {
+  background: #eef7ff;
+}
+
+tbody tr {
+  cursor: pointer;
+}
+
+.positive {
+  color: #0a7d3a;
+  font-weight: 600;
+}
+
+.negative {
+  color: #b3261e;
+  font-weight: 600;
+}
+
+.state-text {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.error-text {
+  margin: 0.65rem 0 0;
+  color: #a01818;
+  background: var(--danger-soft);
+  border: 1px solid #f1b3b3;
+  border-radius: 0.45rem;
+  padding: 0.55rem 0.7rem;
+}

@@ -11,6 +11,8 @@ public class EarningsSignalDbContext(DbContextOptions<EarningsSignalDbContext> o
     public DbSet<EarningsActual> EarningsActuals => Set<EarningsActual>();
     public DbSet<DailyPrice> DailyPrices => Set<DailyPrice>();
     public DbSet<Signal> Signals => Set<Signal>();
+    public DbSet<BacktestRun> BacktestRuns => Set<BacktestRun>();
+    public DbSet<BacktestTrade> BacktestTrades => Set<BacktestTrade>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -101,6 +103,37 @@ public class EarningsSignalDbContext(DbContextOptions<EarningsSignalDbContext> o
                 .WithMany(x => x.Signals)
                 .HasForeignKey(x => x.EarningsEventId)
                 .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<BacktestRun>(entity =>
+        {
+            entity.ToTable("backtest_runs");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.StrategyType).HasMaxLength(80).IsRequired();
+            entity.Property(x => x.WinRatePct).HasPrecision(9, 4);
+            entity.Property(x => x.AverageReturnPct).HasPrecision(9, 4);
+            entity.Property(x => x.CreatedAtUtc).IsRequired();
+
+            entity.HasMany(x => x.Trades)
+                .WithOne(x => x.BacktestRun)
+                .HasForeignKey(x => x.BacktestRunId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<BacktestTrade>(entity =>
+        {
+            entity.ToTable("backtest_trades");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.Ticker).HasMaxLength(10).IsRequired();
+            entity.Property(x => x.Direction).HasMaxLength(10).IsRequired();
+            entity.Property(x => x.SetupType).HasMaxLength(80).IsRequired();
+            entity.Property(x => x.EntryPrice).HasPrecision(18, 4);
+            entity.Property(x => x.ExitPrice).HasPrecision(18, 4);
+            entity.Property(x => x.ReturnPct).HasPrecision(9, 4);
+            entity.Property(x => x.Notes).HasMaxLength(400).IsRequired();
+
+            entity.HasIndex(x => x.BacktestRunId);
+            entity.HasIndex(x => new { x.Ticker, x.EntryDate });
         });
     }
 }
