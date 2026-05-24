@@ -1,0 +1,126 @@
+<section class="panel">
+  <h2>Backtest Lab</h2>
+  <p class="state-text">Run a basic historical strategy check against seeded earnings data.</p>
+
+  <form class="backtest-form" (ngSubmit)="runBacktest()">
+    <label>
+      Strategy
+      <select name="strategyType" [(ngModel)]="strategyType">
+        <option *ngFor="let option of strategyOptions" [value]="option.value">
+          {{ option.label }}
+        </option>
+      </select>
+    </label>
+
+    <label>
+      Holding Days
+      <input
+        type="number"
+        name="holdingDays"
+        min="1"
+        max="20"
+        [(ngModel)]="holdingDays" />
+    </label>
+
+    <label>
+      Min Reaction (%)
+      <input
+        type="number"
+        name="minReactionPct"
+        step="0.1"
+        [(ngModel)]="minReactionPct" />
+    </label>
+
+    <label>
+      From Date
+      <input type="date" name="fromDate" [(ngModel)]="fromDate" />
+    </label>
+
+    <label>
+      To Date
+      <input type="date" name="toDate" [(ngModel)]="toDate" />
+    </label>
+
+    <button type="submit" [disabled]="isRunning">
+      {{ isRunning ? 'Running...' : 'Run Backtest' }}
+    </button>
+  </form>
+
+  <p *ngIf="errorMessage" class="error-text">{{ errorMessage }}</p>
+</section>
+
+<section *ngIf="result" class="panel">
+  <h2>Run Summary</h2>
+
+  <div class="summary-grid">
+    <article>
+      <h3>Strategy</h3>
+      <p>{{ result.run.strategyType }}</p>
+    </article>
+    <article>
+      <h3>Holding Days</h3>
+      <p>{{ result.run.holdingDays }}</p>
+    </article>
+    <article>
+      <h3>Events Evaluated</h3>
+      <p>{{ result.run.totalEventsEvaluated }}</p>
+    </article>
+    <article>
+      <h3>Total Trades</h3>
+      <p>{{ result.run.totalTrades }}</p>
+    </article>
+    <article>
+      <h3>Winning Trades</h3>
+      <p>{{ result.run.winningTrades }}</p>
+    </article>
+    <article>
+      <h3>Win Rate</h3>
+      <p>{{ result.run.winRatePct | number: '1.1-2' }}%</p>
+    </article>
+    <article>
+      <h3>Avg Return</h3>
+      <p>{{ result.run.averageReturnPct | number: '1.1-2' }}%</p>
+    </article>
+    <article>
+      <h3>Created</h3>
+      <p>{{ result.run.createdAtUtc | date: 'MMM d, y, h:mm a' }}</p>
+    </article>
+  </div>
+
+  <h2>Trades</h2>
+
+  <p *ngIf="result.trades.length === 0" class="state-text">
+    No trades were generated for this run.
+  </p>
+
+  <div *ngIf="result.trades.length > 0" class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Ticker</th>
+          <th>Direction</th>
+          <th>Setup</th>
+          <th>Entry Date</th>
+          <th>Entry</th>
+          <th>Exit Date</th>
+          <th>Exit</th>
+          <th>Return %</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let trade of result.trades; trackBy: trackTrade">
+          <td>{{ trade.ticker }}</td>
+          <td>{{ trade.direction }}</td>
+          <td>{{ trade.setupType }}</td>
+          <td>{{ formatDate(trade.entryDate) }}</td>
+          <td>{{ trade.entryPrice | number: '1.2-2' }}</td>
+          <td>{{ formatDate(trade.exitDate) }}</td>
+          <td>{{ trade.exitPrice | number: '1.2-2' }}</td>
+          <td>{{ trade.returnPct | number: '1.2-2' }}</td>
+          <td>{{ trade.notes }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
