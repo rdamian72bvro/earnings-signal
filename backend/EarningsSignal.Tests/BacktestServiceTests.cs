@@ -82,6 +82,37 @@ public class BacktestServiceTests
                 MinReactionPct: -2m)));
     }
 
+    [Fact]
+    public async Task GetBacktestRuns_ReturnsNewestFirst()
+    {
+        await using var dbContext = await CreateSeededContextAsync();
+        var service = new DbBacktestService(dbContext);
+
+        var firstRun = await service.RunBacktestAsync(
+            new BacktestRunRequestDto(
+                StrategyType: "CleanMissShort",
+                HoldingDays: 3,
+                FromDate: null,
+                ToDate: null,
+                MinReactionPct: -2m));
+
+        await Task.Delay(20);
+
+        var secondRun = await service.RunBacktestAsync(
+            new BacktestRunRequestDto(
+                StrategyType: "LowQualityBeatShort",
+                HoldingDays: 3,
+                FromDate: null,
+                ToDate: null,
+                MinReactionPct: -2m));
+
+        var runs = await service.GetBacktestRunsAsync();
+
+        Assert.True(runs.Count >= 2);
+        Assert.Equal(secondRun.Run.Id, runs[0].Id);
+        Assert.Equal(firstRun.Run.Id, runs[1].Id);
+    }
+
     private static async Task<EarningsSignalDbContext> CreateSeededContextAsync()
     {
         var options = new DbContextOptionsBuilder<EarningsSignalDbContext>()
