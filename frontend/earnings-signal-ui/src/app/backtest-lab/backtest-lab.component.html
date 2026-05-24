@@ -49,51 +49,106 @@
   <p *ngIf="errorMessage" class="error-text">{{ errorMessage }}</p>
 </section>
 
-<section *ngIf="result" class="panel">
+<section class="panel">
+  <h2>Recent Runs</h2>
+
+  <p *ngIf="isLoadingRuns" class="state-text">Loading recent runs...</p>
+  <p *ngIf="!isLoadingRuns && recentRuns.length === 0" class="state-text">No runs available yet.</p>
+
+  <div *ngIf="!isLoadingRuns && recentRuns.length > 0" class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Created</th>
+          <th>Strategy</th>
+          <th>Holding Days</th>
+          <th>Events</th>
+          <th>Trades</th>
+          <th>Win Rate %</th>
+          <th>Avg Return %</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let run of recentRuns; trackBy: trackRun">
+          <td>{{ run.createdAtUtc | date: 'MMM d, y, h:mm a' }}</td>
+          <td>{{ run.strategyType }}</td>
+          <td>{{ run.holdingDays }}</td>
+          <td>{{ run.totalEventsEvaluated }}</td>
+          <td>{{ run.totalTrades }}</td>
+          <td>{{ run.winRatePct | number: '1.1-2' }}</td>
+          <td>{{ run.averageReturnPct | number: '1.1-2' }}</td>
+          <td>
+            <button
+              type="button"
+              class="inline-button"
+              [disabled]="selectedRun?.id === run.id"
+              (click)="selectRun(run)">
+              {{ selectedRun?.id === run.id ? 'Selected' : 'View Trades' }}
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section *ngIf="selectedRun" class="panel">
   <h2>Run Summary</h2>
 
   <div class="summary-grid">
     <article>
       <h3>Strategy</h3>
-      <p>{{ result.run.strategyType }}</p>
+      <p>{{ selectedRun.strategyType }}</p>
     </article>
     <article>
       <h3>Holding Days</h3>
-      <p>{{ result.run.holdingDays }}</p>
+      <p>{{ selectedRun.holdingDays }}</p>
     </article>
     <article>
       <h3>Events Evaluated</h3>
-      <p>{{ result.run.totalEventsEvaluated }}</p>
+      <p>{{ selectedRun.totalEventsEvaluated }}</p>
     </article>
     <article>
       <h3>Total Trades</h3>
-      <p>{{ result.run.totalTrades }}</p>
+      <p>{{ selectedRun.totalTrades }}</p>
     </article>
     <article>
       <h3>Winning Trades</h3>
-      <p>{{ result.run.winningTrades }}</p>
+      <p>{{ selectedRun.winningTrades }}</p>
     </article>
     <article>
       <h3>Win Rate</h3>
-      <p>{{ result.run.winRatePct | number: '1.1-2' }}%</p>
+      <p>{{ selectedRun.winRatePct | number: '1.1-2' }}%</p>
     </article>
     <article>
       <h3>Avg Return</h3>
-      <p>{{ result.run.averageReturnPct | number: '1.1-2' }}%</p>
+      <p>{{ selectedRun.averageReturnPct | number: '1.1-2' }}%</p>
     </article>
     <article>
       <h3>Created</h3>
-      <p>{{ result.run.createdAtUtc | date: 'MMM d, y, h:mm a' }}</p>
+      <p>{{ selectedRun.createdAtUtc | date: 'MMM d, y, h:mm a' }}</p>
     </article>
   </div>
 
-  <h2>Trades</h2>
+  <div class="trades-headline">
+    <h2>Trades</h2>
+    <button
+      type="button"
+      class="inline-button"
+      [disabled]="selectedTrades.length === 0"
+      (click)="exportTradesCsv()">
+      Export CSV
+    </button>
+  </div>
 
-  <p *ngIf="result.trades.length === 0" class="state-text">
+  <p *ngIf="isLoadingTrades" class="state-text">Loading trades...</p>
+
+  <p *ngIf="!isLoadingTrades && selectedTrades.length === 0" class="state-text">
     No trades were generated for this run.
   </p>
 
-  <div *ngIf="result.trades.length > 0" class="table-wrap">
+  <div *ngIf="!isLoadingTrades && selectedTrades.length > 0" class="table-wrap">
     <table>
       <thead>
         <tr>
@@ -109,7 +164,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let trade of result.trades; trackBy: trackTrade">
+        <tr *ngFor="let trade of selectedTrades; trackBy: trackTrade">
           <td>{{ trade.ticker }}</td>
           <td>{{ trade.direction }}</td>
           <td>{{ trade.setupType }}</td>
